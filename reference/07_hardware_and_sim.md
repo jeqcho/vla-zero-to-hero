@@ -55,15 +55,9 @@ What real robots and sim platforms cost, what they do, what they're good for. Sk
 - 6-DoF. ~$3k.
 - Used in BridgeData V2 and many low-cost setups.
 
-### Humanoids (frontier; usually closed ecosystems)
+### Humanoids (out of scope for this curriculum; awareness only)
 
-- **Fourier GR-1** — full humanoid; deployed for GR00T N1.
-- **1X NEO / EVE** — used for GR00T deployment.
-- **Unitree G1 / H1** — open-ish humanoid platform; widely used in research.
-- **Figure 02 / 03** — Figure's humanoid; runs Helix. Closed.
-- **Tesla Optimus** — closed.
-
-For humanoid VLA work in 2026: start in simulation (Isaac Lab + GR00T) before buying hardware. Hardware costs $50k–$200k+ and access is usually via partnership.
+Notable platforms: Fourier GR-1 / 1X NEO (GR00T-deployed), Unitree G1/H1 (research-accessible), Figure 02/03 (closed, Helix), Tesla Optimus (closed). For humanoid VLA work in 2026, start in simulation (Isaac Lab + GR00T) — hardware costs $50k–$200k+ and is partnership-gated.
 
 ## Teleop interfaces (the "joystick" for collecting data)
 

@@ -39,17 +39,26 @@ Same recipe pattern (LoRA on the VLM backbone; full fine-tune on the action expe
 
 [Docs](https://huggingface.co/docs/lerobot/smolvla) · [phospho tutorial](https://docs.phospho.ai/learn/train-smolvla).
 
-CLI-level:
+CLI-level (note: `--policy.path` loads weights + sets type automatically; do **not** pass `--policy.type` separately):
 ```bash
 lerobot-train \
-  --policy.type=smolvla \
-  --policy.pretrained="lerobot/smolvla_base" \
+  --policy.path=lerobot/smolvla_base \
   --dataset.repo_id=USER/your-dataset \
+  --batch_size=64 \
   --steps=20000 \
-  --output_dir=outputs/train/smolvla_yourtask
+  --output_dir=outputs/train/smolvla_yourtask \
+  --policy.device=cuda
 ```
 
 ~4 hours on a single A100 for 20k steps. Hub-native; supports `push_to_hub`.
+
+Sim eval (LIBERO):
+```bash
+lerobot-eval \
+  --policy.path=outputs/train/smolvla_yourtask \
+  --env.type=libero --env.task=libero_spatial \
+  --eval.n_episodes=20 --eval.batch_size=2
+```
 
 ### Hyperparameters that matter (in priority order)
 
@@ -63,17 +72,6 @@ lerobot-train \
 ### What NOT to tune on first run
 
 Backbone choice, action head architecture, loss function. Trust the released config; debug the data first.
-
-## Stage 2: VLA pretraining (rare, but know it conceptually)
-
-When you'd do this:
-- You have a new robot family not in OXE (uncommon).
-- You need an action representation not in the base (e.g., torque control, force-controlled).
-- You're a lab/company training your own foundation model.
-
-Recipe: OpenVLA-style cross-embodiment training on OXE + your data, ~150k–1M steps on 64–256 GPUs.
-
-Cost: $100k–$1M of compute, weeks of wall time. Most people skip and just fine-tune.
 
 ## Co-training (the π0.5 / Gemini Robotics trick)
 
@@ -118,7 +116,7 @@ When to skip: first prototype, scarce GPU time, no sim. Get SFT working first.
 - **Vary initial robot pose** within the natural range.
 - **Vary lighting** (different time of day, different overhead lamps).
 - **Random distractor objects** in the scene.
-- **20+ trials per condition** for meaningful success rate (95% CI on Bernoulli requires N≈30 to distinguish 60% from 80%).
+- **At least 20–30 trials per condition** for usable success-rate estimates. To reliably distinguish a 60% policy from an 80% policy at 95% confidence, you actually need ~80–100 trials — 20–30 only catches large differences.
 - **Report per-condition breakdown**, not just overall mean. The mean hides the failure mode you need to fix.
 
 ### Common eval anti-patterns to avoid

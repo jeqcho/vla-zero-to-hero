@@ -20,31 +20,41 @@ Read **in this order, no skipping**:
 1. `reference/00_landscape.md` (45 min). Memorize the 7-axis table and the 2023–2026 timeline.
 2. `reference/01_robotics_primer.md` (30 min). Internalize: action space conventions, control loop, action chunking.
 3. `reference/02_imitation_learning.md` (45 min). Three patterns (BC, ACT, Diffusion Policy) + four action heads.
-4. `reference/04_action_representations.md` (30 min). Skim — you mostly need the decision tree at the end.
-5. **OpenVLA paper** — <https://arxiv.org/abs/2406.09246> (90 min). Sections 1–5 carefully; ablations skim.
+4. **OpenVLA paper** — <https://arxiv.org/abs/2406.09246> (120 min). Sections 1–5 carefully; ablations skim. Chase down unfamiliar terms (RLDS, Prismatic VLM, action token hijack) as you go.
 
 By lunch you should be able to draw the OpenVLA architecture and explain action tokenization in 60 seconds.
 
 ### Afternoon (4 hours) — Install + first run
 
-- Install LeRobot in a fresh `uv` env:
+- Install LeRobot from source (LIBERO extras require it). Fresh `uv` env:
   ```bash
+  git clone https://github.com/huggingface/lerobot.git && cd lerobot
   uv venv && source .venv/bin/activate
-  uv pip install lerobot torch torchvision mani_skill
+  uv pip install -e ".[smolvla,libero]"
+  uv pip install --upgrade mani-skill  # optional, only if you want ManiSkill envs
+  export MUJOCO_GL=egl                  # headless rendering for LIBERO
   ```
 - Pull a small LeRobot dataset and **visualize it** (the visualization notebook in `lerobot/examples/`).
-- Launch a training run for **ACT or Diffusion Policy** on a LIBERO-Spatial task in `tmux`, logs to `logs/day1_$(date +%H%M).log`. Let it run overnight or during evening reading.
+- Sanity-check the LIBERO env loads (`python -c "from libero.libero import benchmark; print(benchmark.get_benchmark_dict())"`).
+- Launch a **5k-step smoke run** of Diffusion Policy on a LIBERO-Spatial task in `tmux`, logs to `logs/day1_$(date +%H%M).log`. Goal: prove the pipeline works, not get a strong result. Kill it before Day 2's run starts.
   ```bash
   tmux new -s vla_d1
-  lerobot-train --policy.type=diffusion --dataset.repo_id=lerobot/libero_spatial_no_noops \
-    --steps=20000 --output_dir=outputs/day1_dp 2>&1 | tee logs/day1_dp_$(date +%H%M).log
+  lerobot-train --policy.type=diffusion \
+    --dataset.repo_id=lerobot/libero_spatial_no_noops \
+    --steps=5000 --output_dir=outputs/day1_dp \
+    2>&1 | tee logs/day1_dp_$(date +%H%M).log
   ```
 
-### Evening (2 hours) — Architectures
+### Evening (2 hours) — Architectures + action heads
 
-Read `reference/03_vla_architectures.md` end-to-end. Then **π0 paper** — <https://www.pi.website/download/pi0.pdf>. Sections 2–4 only. Stop when you understand:
-- Why the action expert is separate from the VLM.
-- What flow matching does in 5–10 steps that a deterministic regression head can't.
+Read in order:
+1. `reference/03_vla_architectures.md` end-to-end.
+2. `reference/04_action_representations.md` (30 min skim; you mostly need the decision tree).
+3. **π0 paper** — <https://www.pi.website/download/pi0.pdf>. Sections 2–4 only. Stop when you understand:
+   - Why the action expert is separate from the VLM.
+   - What flow matching does in 5–10 steps that a deterministic regression head can't.
+
+Before bed: **kill the Day 1 training run** (`tmux kill-session -t vla_d1`). Day 2 needs the GPU.
 
 **End-of-day checkpoint:** Can you answer (yes/no, out loud):
 - What does the OpenVLA action tokenizer do? (Hijacks lowest-freq Llama tokens, 256 bins/dim, 7 dims, AR decode.)
@@ -69,27 +79,28 @@ Read:
 ### Midday (1 hour) — Pick your stack
 
 Decision (snap, don't deliberate):
-- **One GPU, no real arm, want fast iteration**: SmolVLA fine-tune on LIBERO.
-- **A100 + want strongest open**: OpenVLA-OFT LoRA fine-tune on LIBERO.
-- **Real SO-ARM**: SmolVLA on your own teleop data (assumes you've already collected 30–50 demos; if not, do that morning of Day 3).
+- **Default**: SmolVLA fine-tune on LIBERO-Spatial. Fits the day.
+- **Real SO-ARM with pre-collected teleop data**: SmolVLA on your data. Only viable if you already have ~30–50 demos. If not, stay on LIBERO.
+
+(OpenVLA-OFT LoRA needs 8–24 h on A100 per `reference/06_training_and_eval.md` — it does not fit the 3-day plan. Save it for the 1-week plan.)
 
 ### Afternoon (5 hours) — Fine-tune
 
-In `tmux`:
+In `tmux` (a 20k-step SmolVLA run is ~4 h on A100; longer on RTX 4090):
 ```bash
 tmux new -s vla_d2
-# SmolVLA path:
 lerobot-train \
-  --policy.type=smolvla \
-  --policy.pretrained="lerobot/smolvla_base" \
+  --policy.path=lerobot/smolvla_base \
   --dataset.repo_id=lerobot/libero_spatial_no_noops \
+  --batch_size=64 \
   --steps=20000 \
   --output_dir=outputs/day2_smolvla \
+  --job_name=day2_smolvla \
+  --policy.device=cuda \
   2>&1 | tee logs/day2_smolvla_$(date +%H%M).log
 ```
-(For OpenVLA-OFT path, follow <https://github.com/moojink/openvla-oft> README literally.)
 
-While training runs (~3–6 hours):
+While training runs, do these in parallel (NOT additive to the 5 h budget):
 - Read `reference/08_deployment.md` end-to-end.
 - Read **FAST paper** — <https://arxiv.org/abs/2501.09747>, method only.
 - Read **π0.5 abstract + intro** — <https://arxiv.org/abs/2504.16054>.
@@ -99,9 +110,14 @@ While training runs (~3–6 hours):
 
 Once trained, run LIBERO eval:
 ```bash
-lerobot-eval --policy.path=outputs/day2_smolvla --eval.n_episodes=20
+lerobot-eval \
+  --policy.path=outputs/day2_smolvla \
+  --env.type=libero \
+  --env.task=libero_spatial \
+  --eval.n_episodes=20 \
+  --eval.batch_size=2
 ```
-Note success rate per task. Diagnose any drastic failures (look at action stats first, then images, then model).
+Note per-task success rate. If drastically off published, diagnose in this order: (1) action normalization stats, (2) image preprocessing, (3) action convention/units, (4) model. The pipeline is wrong before the model is wrong.
 
 **End-of-day checkpoint:** Working checkpoint + numbers. If success rate is wildly off published, the *pipeline* is broken — debug normalization, image preprocessing, and action conventions before assuming the model is bad.
 
@@ -120,7 +136,7 @@ Read:
    - Loop: read image → predict chunk → execute chunk[:m] → loop.
    - Add a stopwatch around inference. Log p50, p95 latency.
    - Add chunk buffering so the next inference starts before the current chunk runs out.
-3. (45 min) **If you have a real arm**: deploy the loop on the real robot. Run 10 trials. Otherwise: deploy in sim with longer rollouts than during training.
+3. (45 min) **If you have a real arm**: deploy the loop on the real robot. Run 10 trials. *Calibration assumed done the night before — budget 1–2h on calibration the first time.* Otherwise: deploy in sim with longer rollouts than during training.
 
 ### Midday (2 hours) — Ecosystem and frontier
 
@@ -141,23 +157,9 @@ If you'd be answering "how do we make VLAs robust" at work next week — pick RL
 ### Evening (2 hours) — Consolidate
 
 - Write a single-page brief (`SUMMARY.md`): the 7-axis design space, your model choice and why, your fine-tune numbers, your deployment latency budget, the top 3 open problems you'd work on next.
-- Browse one of the awesome-VLA repos for ~30 minutes. Star 5 papers from the last 3 months. **Schedule a recurring 30-min/week "VLA digest" reading slot** — the field moves and you'll get stale fast otherwise.
+- Browse one of the awesome-VLA repos for ~30 minutes. Star 5 papers from the last 3 months.
 
 ---
-
-## End-state after 3 days
-
-You can:
-- Explain the design space of a modern VLA in 5 minutes.
-- Read and critique a new VLA paper out of the box (you'll know where to look for the action head, chunking, training data, and the eval methodology).
-- Fine-tune an open VLA on your own data.
-- Run the inference loop on a real robot or sim with reasonable latency.
-- Hold a substantive conversation with any researcher in the field.
-
-You cannot (yet):
-- Train an OXE-scale foundation model. (Not the goal.)
-- Beat published SOTA on a benchmark — that takes weeks of iteration, not days.
-- Diagnose subtle dexterous-manipulation failures from first principles (e.g., contact dynamics) without more robotics depth.
 
 ## Compressed-day pitfalls (where 3-day sprints break)
 

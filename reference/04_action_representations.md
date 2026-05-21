@@ -89,6 +89,8 @@ Numbers: **26× faster** inference and **3× lower latency** than stock OpenVLA,
 
 When this fails: highly multimodal tasks (multiple equally-good grasps in different directions). L1 regression averages modes; you'll see hesitation or mode confusion.
 
+**Sanity check before you over-commit to a fancy head:** [VLA-0](https://arxiv.org/pdf/2510.13054) reports that a stock VLM with very simple action handling matches OpenVLA-OFT / π0.5 / SmolVLA on LIBERO. Some of the head-engineering gains may be from training tricks more than architecture. If you're starting a new VLA from scratch, run the simplest possible head as a baseline first.
+
 ## Action chunking, in any of the four patterns
 
 Predict a chunk of `k` future actions; execute open-loop for `m ≤ k` steps; re-predict. Three useful knobs:

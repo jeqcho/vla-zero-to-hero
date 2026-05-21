@@ -21,7 +21,7 @@ The codebases you'll actually use, the papers worth reading, and the channels to
 - Production-quality: π0, π0-FAST, π0.5 checkpoints + training and fine-tuning scripts.
 - Async inference server for real-robot deployment.
 - LeRobot dataset compatibility.
-- Apache-2 license.
+- Apache 2.0 license.
 
 If you want the strongest open VLA in 2026, this is it.
 
@@ -99,7 +99,7 @@ Surveys (when you want a map):
 4. **ICLR / NeurIPS / ICML** — ML side; many VLA papers (OpenVLA, SimpleVLA-RL) appear here.
 5. **CVPR** — vision side; embodied/VLA tracks growing.
 
-Twitter / X: still where new releases break. Follow @physical_int, @GoogleDeepMind, @nvidia, @Tony__Zhao, @ChengChi_, @kim_moosuk, @ShuranSong, @SiddKaramcheti, @bg_haijun, @ProfessorDavidH.
+Twitter / X: new releases still break here first. Three high-signal accounts: **@physical_int** (PI releases), **@GoogleDeepMind** (Gemini Robotics), **@NVIDIAAIDev** (GR00T + Isaac). Individual researcher handles rot fast; better to follow the labs.
 
 HuggingFace: <https://huggingface.co/lerobot> is the org. New model releases drop here.
 

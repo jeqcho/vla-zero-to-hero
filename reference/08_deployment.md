@@ -24,8 +24,8 @@ This decouples physical control rate from inference rate. **Don't try to run VLA
 
 | Model + config | Hardware | Latency or rate |
 |---|---|---|
-| **OpenVLA 7B stock**, fp16 | Jetson AGX Orin | ~3 FPS (action steps/sec) [LiteVLA-Edge paper] |
-| **OpenVLA 7B stock**, INT4 | Jetson AGX Orin | ~3 FPS (compute bound by AR decode) |
+| **OpenVLA 7B stock**, INT4 quantized | Jetson AGX Orin | ~3 FPS (bottleneck: AR token decode, not memory) [LiteVLA-Edge paper] |
+| OpenVLA 7B fp16 | Jetson AGX Orin | doesn't fit comfortably in 64 GB shared memory; rarely run at this precision on-device |
 | **OpenVLA + OFT (parallel decode + chunk)** | A100 / RTX 4090 | ~25× speedup → chunk in ~30 ms |
 | **π0 (flow matching, 5–10 ODE steps)** | RTX 4090 | 50 Hz effective control (with chunking) |
 | **SmolVLA 450M** | Consumer GPU | Real-time on a single GPU |

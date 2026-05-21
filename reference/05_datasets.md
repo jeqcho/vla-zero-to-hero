@@ -18,7 +18,7 @@ Practical:
 
 ## DROID — high-quality teleop on Franka
 
-- ~76K demonstrations across **350+ scenes**, all on Franka Panda arms, collected at **52 sites** with a unified protocol.
+- **~76K demos / ~350 hours / 564 scenes** across **52 buildings / 18 labs**, all on Franka Panda arms, unified protocol. [Paper](https://arxiv.org/abs/2403.12945).
 - Quality is much more consistent than OXE (single embodiment, standard setup).
 - Excellent for fine-tuning generalists, evaluating cross-scene generalization.
 - Distributed as part of OXE; also available standalone.
@@ -33,11 +33,11 @@ Practical:
 
 [Code](https://github.com/Lifelong-Robot-Learning/LIBERO) · papers below
 
-Four task suites in MuJoCo / Robosuite, each ~10 tasks × 50 demos:
-- **LIBERO-Spatial** — same objects, different spatial arrangements.
-- **LIBERO-Object** — same task, different objects.
-- **LIBERO-Goal** — same scene/objects, different goals.
-- **LIBERO-Long** — long-horizon, multi-step tasks (~30 steps).
+Four task suites in MuJoCo / Robosuite:
+- **LIBERO-Spatial** — 10 tasks × 50 demos. Same objects, different spatial arrangements.
+- **LIBERO-Object** — 10 tasks × 50 demos. Same task, different objects.
+- **LIBERO-Goal** — 10 tasks × 50 demos. Same scene/objects, different goals.
+- **LIBERO-Long (LIBERO-100)** — **100 long-horizon, multi-step tasks** × ~50 demos.
 
 Why everyone uses it:
 - Standardized eval, easy to install (`pip install libero`).

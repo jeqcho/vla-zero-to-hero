@@ -15,13 +15,6 @@ A no-fluff curriculum for a research engineer learning Vision-Language-Action mo
 
 You have solid ML/DL + transformers. You have minimal robotics background. Your end goal is building/deploying a VLA on a real robot — not surveying the field, not publishing the next foundation model.
 
-## What this curriculum optimizes for
-
-1. **Load-bearing only.** Every section maps to a step in "fine-tune and deploy a VLA on hardware." If it doesn't, it was cut.
-2. **Open source first.** OpenVLA, π0/openpi, SmolVLA, LeRobot, Isaac GR00T — code you can run. Closed-source models (Gemini Robotics, Helix) are covered conceptually but not relied on.
-3. **Recent (2024–2026).** RT-1-era material is mentioned for context, not assigned reading.
-4. **Honest evaluation.** LIBERO is a sanity check, not ground truth. The curriculum trains the habit of held-out real evals from day 1.
-
 ## What's deliberately out of scope
 
 - Classical robotics: kinematics deep-dive, dynamics, motion planning, ROS internals.
