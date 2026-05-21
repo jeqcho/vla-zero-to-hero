@@ -52,13 +52,16 @@ lerobot-train \
 
 ~4 hours on a single A100 for 20k steps. Hub-native; supports `push_to_hub`.
 
-Sim eval (LIBERO; note the `checkpoints/last/pretrained_model` suffix — `lerobot-eval` expects the saved model dir, not the run dir):
+Sim eval (LIBERO protocol — 10 episodes/task, single-env; note the `checkpoints/last/pretrained_model` suffix — `lerobot-eval` expects the saved model dir, not the run dir):
 ```bash
 lerobot-eval \
   --policy.path=outputs/train/smolvla_yourtask/checkpoints/last/pretrained_model \
   --env.type=libero --env.task=libero_spatial \
-  --eval.n_episodes=20 --eval.batch_size=2
+  --eval.n_episodes=10 --eval.batch_size=1 \
+  --env.max_parallel_tasks=1
 ```
+
+**Important: use the `HuggingFaceVLA/libero` dataset for LIBERO training.** Other LIBERO LeRobot uploads (e.g., `lerobot/libero_spatial_image`) use the feature key `observation.images.wrist_image`, but the LIBERO eval env produces `observation.images.image2` — schema mismatch will crash eval. `HuggingFaceVLA/libero` is preprocessed to match the eval env. (Per [LeRobot LIBERO docs](https://huggingface.co/docs/lerobot/libero).)
 
 ### Hyperparameters that matter (in priority order)
 

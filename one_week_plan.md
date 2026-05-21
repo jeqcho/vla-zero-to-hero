@@ -96,17 +96,18 @@ This curriculum is structured so each day produces a deliverable. **If a day's d
   - **(easier, fits the day)** Fine-tune SmolVLA on a single LIBERO task (~4 h on A100, longer on RTX 4090).
     ```bash
     lerobot-train --policy.path=lerobot/smolvla_base \
-      --dataset.repo_id=lerobot/libero_spatial_image \
+      --dataset.repo_id=HuggingFaceVLA/libero \
       --batch_size=64 --steps=20000 \
       --output_dir=outputs/day4_smolvla --policy.device=cuda
     ```
   - **(real-stakes, overnight)** Run OpenVLA-OFT LoRA fine-tune on a LIBERO task (8–24 h on A100). Reference: <https://openvla-oft.github.io/> · <https://github.com/moojink/openvla-oft>. Start it now; check tomorrow morning.
-- Run eval on LIBERO:
+- Run eval on LIBERO (LIBERO protocol: 10 episodes/task, single-env):
   ```bash
   lerobot-eval \
     --policy.path=outputs/day4_smolvla/checkpoints/last/pretrained_model \
     --env.type=libero --env.task=libero_spatial \
-    --eval.n_episodes=20 --eval.batch_size=2
+    --eval.n_episodes=10 --eval.batch_size=1 \
+    --env.max_parallel_tasks=1
   ```
 - Read LIBERO-PRO (<https://arxiv.org/abs/2510.03827>) to understand why LIBERO numbers are over-optimistic.
 

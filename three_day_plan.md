@@ -41,7 +41,7 @@ By lunch you should be able to draw the OpenVLA architecture and explain action 
   ```bash
   tmux new -s vla_d1
   lerobot-train --policy.type=diffusion \
-    --dataset.repo_id=lerobot/libero_spatial_image \
+    --dataset.repo_id=HuggingFaceVLA/libero \
     --steps=5000 --output_dir=outputs/day1_dp \
     2>&1 | tee logs/day1_dp_$(date +%H%M).log
   ```
@@ -92,7 +92,7 @@ In `tmux` (a 20k-step SmolVLA run is ~4 h on A100; longer on RTX 4090):
 tmux new -s vla_d2
 lerobot-train \
   --policy.path=lerobot/smolvla_base \
-  --dataset.repo_id=lerobot/libero_spatial_image \
+  --dataset.repo_id=HuggingFaceVLA/libero \
   --batch_size=64 \
   --steps=20000 \
   --output_dir=outputs/day2_smolvla \
@@ -115,9 +115,11 @@ lerobot-eval \
   --policy.path=outputs/day2_smolvla/checkpoints/last/pretrained_model \
   --env.type=libero \
   --env.task=libero_spatial \
-  --eval.n_episodes=20 \
-  --eval.batch_size=2
+  --eval.n_episodes=10 \
+  --eval.batch_size=1 \
+  --env.max_parallel_tasks=1
 ```
+(LIBERO protocol: 10 episodes per task, single-env eval. Bumping `--eval.batch_size` parallelizes envs but can hide bugs that only manifest serially.)
 Note per-task success rate. If drastically off published, diagnose in this order: (1) action normalization stats, (2) image preprocessing, (3) action convention/units, (4) model. The pipeline is wrong before the model is wrong.
 
 **End-of-day checkpoint:** Working checkpoint + numbers. If success rate is wildly off published, the *pipeline* is broken — debug normalization, image preprocessing, and action conventions before assuming the model is bad.

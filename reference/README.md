@@ -1,7 +1,7 @@
 # VLA Reference (Zero-to-Hero)
 
 Curated reference for a research engineer building/deploying Vision-Language-Action models on real robots.
-**Bias:** practical, recent (2024–2026), open-source-first, deploy-on-hardware oriented.
+**Bias:** practical, recent (2023–2026), open-source-first, deploy-on-hardware oriented.
 
 ## Reading order
 
