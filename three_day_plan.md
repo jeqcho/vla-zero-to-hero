@@ -34,13 +34,14 @@ By lunch you should be able to draw the OpenVLA architecture and explain action 
   uv pip install --upgrade mani-skill  # optional, only if you want ManiSkill envs
   export MUJOCO_GL=egl                  # headless rendering for LIBERO
   ```
+  *Note: LeRobot's `[libero]` extra is Linux-only. On macOS you'll need to install LIBERO manually from <https://github.com/Lifelong-Robot-Learning/LIBERO> or skip LIBERO and use ManiSkill instead.*
 - Pull a small LeRobot dataset and **visualize it** (the visualization notebook in `lerobot/examples/`).
 - Sanity-check the LIBERO env loads (`python -c "from libero.libero import benchmark; print(benchmark.get_benchmark_dict())"`).
 - Launch a **5k-step smoke run** of Diffusion Policy on a LIBERO-Spatial task in `tmux`, logs to `logs/day1_$(date +%H%M).log`. Goal: prove the pipeline works, not get a strong result. Kill it before Day 2's run starts.
   ```bash
   tmux new -s vla_d1
   lerobot-train --policy.type=diffusion \
-    --dataset.repo_id=lerobot/libero_spatial_no_noops \
+    --dataset.repo_id=lerobot/libero_spatial_image \
     --steps=5000 --output_dir=outputs/day1_dp \
     2>&1 | tee logs/day1_dp_$(date +%H%M).log
   ```
@@ -91,7 +92,7 @@ In `tmux` (a 20k-step SmolVLA run is ~4 h on A100; longer on RTX 4090):
 tmux new -s vla_d2
 lerobot-train \
   --policy.path=lerobot/smolvla_base \
-  --dataset.repo_id=lerobot/libero_spatial_no_noops \
+  --dataset.repo_id=lerobot/libero_spatial_image \
   --batch_size=64 \
   --steps=20000 \
   --output_dir=outputs/day2_smolvla \
@@ -111,7 +112,7 @@ While training runs, do these in parallel (NOT additive to the 5 h budget):
 Once trained, run LIBERO eval:
 ```bash
 lerobot-eval \
-  --policy.path=outputs/day2_smolvla \
+  --policy.path=outputs/day2_smolvla/checkpoints/last/pretrained_model \
   --env.type=libero \
   --env.task=libero_spatial \
   --eval.n_episodes=20 \
@@ -156,7 +157,7 @@ If you'd be answering "how do we make VLAs robust" at work next week — pick RL
 
 ### Evening (2 hours) — Consolidate
 
-- Write a single-page brief (`SUMMARY.md`): the 7-axis design space, your model choice and why, your fine-tune numbers, your deployment latency budget, the top 3 open problems you'd work on next.
+- Write a single-page brief (`notes/SUMMARY.md`): the 7-axis design space, your model choice and why, your fine-tune numbers, your deployment latency budget, the top 3 open problems you'd work on next.
 - Browse one of the awesome-VLA repos for ~30 minutes. Star 5 papers from the last 3 months.
 
 ---

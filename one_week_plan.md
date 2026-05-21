@@ -26,6 +26,7 @@ This curriculum is structured so each day produces a deliverable. **If a day's d
   uv pip install -e ".[smolvla,libero]"
   export MUJOCO_GL=egl   # headless rendering for LIBERO
   ```
+  *Note: LeRobot's `[libero]` extra is Linux-only. On macOS, install LIBERO manually from <https://github.com/Lifelong-Robot-Learning/LIBERO> or substitute ManiSkill (`uv pip install --upgrade mani-skill`).*
 - Walk through LeRobot's "Visualize a Dataset" notebook on any small LeRobot dataset (e.g., `lerobot/aloha_sim_insertion_human`). Confirm you can see images, actions, and a rollout.
 - Sanity-check the LIBERO env loads: `python -c "from libero.libero import benchmark; print(benchmark.get_benchmark_dict())"`.
 - Sketch the (obs → policy → action) loop on paper. Identify: action dim, control frequency, chunk length, normalization. **You should be able to draw this from memory at the end of the day.**
@@ -95,14 +96,15 @@ This curriculum is structured so each day produces a deliverable. **If a day's d
   - **(easier, fits the day)** Fine-tune SmolVLA on a single LIBERO task (~4 h on A100, longer on RTX 4090).
     ```bash
     lerobot-train --policy.path=lerobot/smolvla_base \
-      --dataset.repo_id=lerobot/libero_spatial_no_noops \
+      --dataset.repo_id=lerobot/libero_spatial_image \
       --batch_size=64 --steps=20000 \
       --output_dir=outputs/day4_smolvla --policy.device=cuda
     ```
   - **(real-stakes, overnight)** Run OpenVLA-OFT LoRA fine-tune on a LIBERO task (8–24 h on A100). Reference: <https://openvla-oft.github.io/> · <https://github.com/moojink/openvla-oft>. Start it now; check tomorrow morning.
 - Run eval on LIBERO:
   ```bash
-  lerobot-eval --policy.path=outputs/day4_smolvla \
+  lerobot-eval \
+    --policy.path=outputs/day4_smolvla/checkpoints/last/pretrained_model \
     --env.type=libero --env.task=libero_spatial \
     --eval.n_episodes=20 --eval.batch_size=2
   ```

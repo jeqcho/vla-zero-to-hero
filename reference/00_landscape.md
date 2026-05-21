@@ -8,11 +8,13 @@ A **VLA** is a single neural network that maps `(camera images, language instruc
 
 | Axis | Options | Used by |
 |---|---|---|
-| **Backbone** | LLM-style (Llama-2 7B), VLM (PaliGemma 3B, Eagle 2.5, Gemma) | OpenVLA (Llama+SigLIP); π0/π0.5 (PaliGemma); GR00T N1.5 (Eagle 2.5); Helix (custom 7B VLM) |
+| **Backbone** | LLM-style (Llama-2 7B), VLM (PaliGemma 3B, Eagle-2/2.5, Gemma) | OpenVLA (Llama+SigLIP); π0/π0.5 (PaliGemma); GR00T N1 (Eagle-2), N1.5+ (Eagle-2.5); Helix (custom 7B VLM) |
 | **Action head** | Discrete-token autoregression; flow matching / diffusion; L1 regression w/ parallel decoding | OpenVLA, RT-2 (discrete); π0, GR00T, RDT-1B (diffusion/flow); OpenVLA-OFT, Helix S1 (regression) |
-| **Chunking** | Predict next k actions in one shot, execute open-loop | Almost everyone now: ACT k=100; π0 k=50; OpenVLA-OFT k=8 |
+| **Chunking** | Predict next k actions in one shot, execute open-loop | Almost everyone now: ACT k=100; π0 k=50; OpenVLA-OFT k=8 (single arm) / k=25 (bimanual) |
 | **System decomposition** | Single tower; dual-system S1 (fast) + S2 (slow) | Single: OpenVLA, π0. Dual: GR00T N1, Helix, Gemini Robotics 1.5 |
 | **Action space** | Joint positions / deltas; EEF Δpose + gripper; both | OXE convention: EEF Δxyz + ΔRPY + gripper (7D) |
+| **Proprioception** | Used or ignored | Ignored: OpenVLA stock. Used: π0, GR00T, SmolVLA, most newer models |
+| **Cameras** | Third-person only, +wrist, multi-view | Single 3rd-person: OpenVLA. 3rd + wrist: π0, SmolVLA. Multi: ALOHA-trained (2 wrist + 2 overhead) |
 
 ## 2023–2026 timeline (only models that matter)
 

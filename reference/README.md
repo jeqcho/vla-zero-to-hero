@@ -5,7 +5,7 @@ Curated reference for a research engineer building/deploying Vision-Language-Act
 
 ## Reading order
 
-1. [00_landscape.md](00_landscape.md) — what a VLA is, taxonomy, and the 2024–2026 timeline (read first).
+1. [00_landscape.md](00_landscape.md) — what a VLA is, taxonomy, and the 2023–2026 timeline (read first).
 2. [01_robotics_primer.md](01_robotics_primer.md) — minimum robotics for ML folks (kinematics, EE pose, gripper, control loop).
 3. [02_imitation_learning.md](02_imitation_learning.md) — BC, ACT, Diffusion Policy. These are the parent ideas.
 4. [03_vla_architectures.md](03_vla_architectures.md) — RT-2 → OpenVLA → π0/π0.5 → GR00T → Helix → Gemini Robotics.

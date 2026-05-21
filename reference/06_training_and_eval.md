@@ -52,10 +52,10 @@ lerobot-train \
 
 ~4 hours on a single A100 for 20k steps. Hub-native; supports `push_to_hub`.
 
-Sim eval (LIBERO):
+Sim eval (LIBERO; note the `checkpoints/last/pretrained_model` suffix — `lerobot-eval` expects the saved model dir, not the run dir):
 ```bash
 lerobot-eval \
-  --policy.path=outputs/train/smolvla_yourtask \
+  --policy.path=outputs/train/smolvla_yourtask/checkpoints/last/pretrained_model \
   --env.type=libero --env.task=libero_spatial \
   --eval.n_episodes=20 --eval.batch_size=2
 ```
